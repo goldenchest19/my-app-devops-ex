@@ -2,8 +2,8 @@ pipeline {
     agent { label 'jenkins_slave1' }
 
     environment {
-        SONAR_TOKEN = credentials('sonar-token')     // нужно создать в Jenkins → Credentials - squ_d5aa7279b8650b2a808fa614dac04fcfa9a9b967
-        NEXUS_CREDS = credentials('nexus-creds')
+        SONAR_TOKEN = credentials('sonar-token')
+        NEXUS = credentials('nexus-creds')
     }
 
     stages {
@@ -26,10 +26,10 @@ pipeline {
             }
             post {
                 always {
-                    allure(
+                    allure([
                         includeProperties: false,
                         results: [[path: "build/allure-results"]]
-                    )
+                    ])
                 }
             }
         }
@@ -51,8 +51,8 @@ pipeline {
             steps {
                 sh """
                     ./gradlew publish \
-                    -PnexusUser=${NEXUS_CREDS_USR} \
-                    -PnexusPass=${NEXUS_CREDS_PSW}
+                    -PnexusUser=${NEXUS_USR} \
+                    -PnexusPass=${NEXUS_PSW}
                 """
             }
         }
