@@ -12,6 +12,8 @@ plugins {
 
 group = 'com.vacancy'
 version = '0.0.1-SNAPSHOT'
+rootProject.name = 'my-app-devops-ex'
+
 
 java {
     sourceCompatibility = '17'
@@ -76,18 +78,18 @@ sonar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact bootJar // Spring Boot JAR
+            artifact("${buildDir}/libs/${rootProject.name}-${version}.jar")
         }
     }
 
     repositories {
         maven {
             name = "nexus"
-            url = uri("http://nexus:8081/repository/maven-releases/") //
+            url = uri("http://nexus:8081/repository/maven-releases/")
             allowInsecureProtocol = true
             credentials {
-                username = project.findProperty("nexusUser") ?: ""
-                password = project.findProperty("nexusPass") ?: ""
+                username = project.findProperty("nexusUser")
+                password = project.findProperty("nexusPass")
             }
         }
     }
