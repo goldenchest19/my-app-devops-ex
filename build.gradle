@@ -8,6 +8,12 @@ plugins {
 
     // Publishing to Nexus
     id 'maven-publish'
+
+    id 'jacoco'
+}
+
+jacoco {
+    toolVersion = "0.8.10"
 }
 
 group = 'com.vacancy'
@@ -47,10 +53,21 @@ dependencies {
     testImplementation 'io.qameta.allure:allure-java-commons:2.23.0'
 }
 
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
     systemProperty "allure.results.directory", "build/allure-results"
+    finalizedBy jacocoTestReport
 }
+
+
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
