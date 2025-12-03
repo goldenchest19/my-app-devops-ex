@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('sonar-token')     // нужно создать в Jenkins → Credentials - squ_d5aa7279b8650b2a808fa614dac04fcfa9a9b967
-        NEXUS_USER = credentials('admin')   // Nexus login
-        NEXUS_PASS = credentials('Apple_man_best01')   // Nexus password
+        NEXUS_CREDS = credentials('nexus-creds')
     }
 
     stages {
@@ -52,8 +51,8 @@ pipeline {
             steps {
                 sh """
                     ./gradlew publish \
-                    -PnexusUser=${NEXUS_USER} \
-                    -PnexusPass=${NEXUS_PASS}
+                    -PnexusUser=${NEXUS_CREDS_USR} \
+                    -PnexusPass=${NEXUS_CREDS_PSW}
                 """
             }
         }
