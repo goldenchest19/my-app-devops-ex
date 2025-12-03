@@ -83,8 +83,8 @@ publishing {
     repositories {
         maven {
             name = "nexus"
-            url = uri("http://nexus:8081/repository/maven-releases/my-app-devops-ex") //
-
+            url = uri("http://nexus:8081/repository/maven-releases/") //
+            allowInsecureProtocol = true
             credentials {
                 username = project.findProperty("nexusUser") ?: ""
                 password = project.findProperty("nexusPass") ?: ""
