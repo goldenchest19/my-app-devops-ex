@@ -2,13 +2,19 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
+
+    // SonarQube plugin
+    id 'org.sonarqube' version '4.4.1.3373'
+
+    // Publishing to Nexus
+    id 'maven-publish'
 }
 
 group = 'com.vacancy'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '21'
+    sourceCompatibility = '17'
 }
 
 repositories {
@@ -19,20 +25,70 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Hibernate utils
     implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
     implementation "io.hypersistence:hypersistence-utils-hibernate-63:3.9.0"
-    
-    // Swagger dependencies
+
+    // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
-    
+
     // Logging
     implementation 'org.springframework.boot:spring-boot-starter-logging'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-} 
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "UTF-8"
+}
+
+tasks.withType(Jar) {
+    enabled = true
+}
+
+// -----------------------------
+//     SonarQube configuration
+// -----------------------------
+sonar {
+    properties {
+        property "sonar.projectKey", "my-app-devops-ex-key"
+        property "sonar.projectName", "my-app-devops-ex-name"
+        property "sonar.host.url", "http://sonarqube:9000"
+    }
+}
+
+// -----------------------------
+//     Publishing (Nexus)
+// -----------------------------
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact bootJar // Spring Boot JAR
+        }
+    }
+
+    repositories {
+        maven {
+            name = "nexus"
+            url = uri("http://nexus:8081/repository/maven-releases/my-app-devops-ex") //
+
+            credentials {
+                username = project.findProperty("nexusUser") ?: ""
+                password = project.findProperty("nexusPass") ?: ""
+            }
+        }
+    }
+}
